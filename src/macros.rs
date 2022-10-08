@@ -193,7 +193,11 @@ macro_rules! buffer_check_length {
                 let len = self.buffer.as_ref().len();
                 if len < $buffer_len {
                     Err(format!(
-                        concat!("invalid ", stringify!($name), ": length {} < {}"),
+                        concat!(
+                            "invalid ",
+                            stringify!($name),
+                            ": length {} < {}"
+                        ),
                         len, $buffer_len
                     )
                     .into())

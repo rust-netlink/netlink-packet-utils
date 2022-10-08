@@ -34,7 +34,10 @@ pub fn parse_ipv6(payload: &[u8]) -> Result<[u8; 16], DecodeError> {
 
 pub fn parse_ip(payload: &[u8]) -> Result<IpAddr, DecodeError> {
     match payload.len() {
-        4 => Ok(Ipv4Addr::new(payload[0], payload[1], payload[2], payload[3]).into()),
+        4 => Ok(
+            Ipv4Addr::new(payload[0], payload[1], payload[2], payload[3])
+                .into(),
+        ),
         16 => Ok(Ipv6Addr::from([
             payload[0],
             payload[1],
