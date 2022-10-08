@@ -15,7 +15,8 @@ type Field = Range<usize>;
 
 /// Identify the bits that represent the "nested" flag of a netlink attribute.
 pub const NLA_F_NESTED: u16 = 0x8000;
-/// Identify the bits that represent the "byte order" flag of a netlink attribute.
+/// Identify the bits that represent the "byte order" flag of a netlink
+/// attribute.
 pub const NLA_F_NET_BYTEORDER: u16 = 0x4000;
 /// Identify the bits that represent the type of a netlink attribute.
 pub const NLA_TYPE_MASK: u16 = !(NLA_F_NET_BYTEORDER | NLA_F_NESTED);
@@ -38,8 +39,9 @@ fn VALUE(length: usize) -> Field {
     TYPE.end..TYPE.end + length
 }
 
-// with Copy, NlaBuffer<&'buffer T> can be copied, which turns out to be pretty conveninent. And since it's
-// boils down to copying a reference it's pretty cheap
+// with Copy, NlaBuffer<&'buffer T> can be copied, which turns out to be pretty
+// conveninent. And since it's boils down to copying a reference it's pretty
+// cheap
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct NlaBuffer<T: AsRef<[u8]>> {
     buffer: T,
@@ -114,9 +116,10 @@ impl<T: AsRef<[u8]>> NlaBuffer<T> {
         (NativeEndian::read_u16(&data[TYPE]) & NLA_F_NET_BYTEORDER) != 0
     }
 
-    /// Return the `length` field. The `length` field corresponds to the length of the nla
-    /// header (type and length fields, and the value field). However, it does not account for the
-    /// potential padding that follows the value field.
+    /// Return the `length` field. The `length` field corresponds to the length
+    /// of the nla header (type and length fields, and the value field).
+    /// However, it does not account for the potential padding that follows
+    /// the value field.
     pub fn length(&self) -> u16 {
         let data = self.buffer.as_ref();
         NativeEndian::read_u16(&data[LENGTH])
@@ -126,7 +129,8 @@ impl<T: AsRef<[u8]>> NlaBuffer<T> {
     ///
     /// # Panic
     ///
-    /// This panics if the length field value is less than the attribut header size.
+    /// This panics if the length field value is less than the attribut header
+    /// size.
     pub fn value_length(&self) -> usize {
         self.length() as usize - TYPE.end
     }
@@ -191,7 +195,9 @@ impl Nla for DefaultNla {
     }
 }
 
-impl<'buffer, T: AsRef<[u8]> + ?Sized> Parseable<NlaBuffer<&'buffer T>> for DefaultNla {
+impl<'buffer, T: AsRef<[u8]> + ?Sized> Parseable<NlaBuffer<&'buffer T>>
+    for DefaultNla
+{
     fn parse(buf: &NlaBuffer<&'buffer T>) -> Result<Self, DecodeError> {
         let mut kind = buf.kind();
 
@@ -282,8 +288,8 @@ impl<'a, T: Nla> Emitable for &'a [T] {
     }
 }
 
-/// An iterator that iteratates over nlas without decoding them. This is useful when looking
-/// for specific nlas.
+/// An iterator that iteratates over nlas without decoding them. This is useful
+/// when looking for specific nlas.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct NlasIterator<T> {
     position: usize,
@@ -299,7 +305,9 @@ impl<T> NlasIterator<T> {
     }
 }
 
-impl<'buffer, T: AsRef<[u8]> + ?Sized + 'buffer> Iterator for NlasIterator<&'buffer T> {
+impl<'buffer, T: AsRef<[u8]> + ?Sized + 'buffer> Iterator
+    for NlasIterator<&'buffer T>
+{
     type Item = Result<NlaBuffer<&'buffer [u8]>, DecodeError>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -313,8 +321,9 @@ impl<'buffer, T: AsRef<[u8]> + ?Sized + 'buffer> Iterator for NlasIterator<&'buf
                 Some(Ok(nla_buffer))
             }
             Err(e) => {
-                // Make sure next time we call `next()`, we return None. We don't try to continue
-                // iterating after we failed to return a buffer.
+                // Make sure next time we call `next()`, we return None. We
+                // don't try to continue iterating after we
+                // failed to return a buffer.
                 self.position = self.buffer.as_ref().len();
                 Some(Err(e))
             }
@@ -328,9 +337,10 @@ mod tests {
 
     #[test]
     fn network_byteorder() {
-        // The IPSET_ATTR_TIMEOUT attribute should have the network byte order flag set.
-        // IPSET_ATTR_TIMEOUT(3600)
-        static TEST_ATTRIBUTE: &[u8] = &[0x08, 0x00, 0x06, 0x40, 0x00, 0x00, 0x0e, 0x10];
+        // The IPSET_ATTR_TIMEOUT attribute should have the network byte order
+        // flag set. IPSET_ATTR_TIMEOUT(3600)
+        static TEST_ATTRIBUTE: &[u8] =
+            &[0x08, 0x00, 0x06, 0x40, 0x00, 0x00, 0x0e, 0x10];
         let buffer = NlaBuffer::new(TEST_ATTRIBUTE);
         let buffer_is_net = buffer.network_byte_order_flag();
         let buffer_is_nest = buffer.nested_flag();
@@ -347,7 +357,10 @@ mod tests {
         let emit_is_net = emit.network_byte_order_flag();
         let emit_is_nest = emit.nested_flag();
 
-        assert_eq!([buffer_is_net, buffer_is_nest], [attr_is_net, attr_is_nest]);
+        assert_eq!(
+            [buffer_is_net, buffer_is_nest],
+            [attr_is_net, attr_is_nest]
+        );
         assert_eq!([attr_is_net, attr_is_nest], [emit_is_net, emit_is_nest]);
     }
 
