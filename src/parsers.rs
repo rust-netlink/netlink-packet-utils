@@ -138,6 +138,13 @@ pub fn parse_i32(payload: &[u8]) -> Result<i32, DecodeError> {
     Ok(NativeEndian::read_i32(payload))
 }
 
+pub fn parse_i64(payload: &[u8]) -> Result<i64, DecodeError> {
+    if payload.len() != 8 {
+        return Err(format!("invalid i64: {payload:?}").into());
+    }
+    Ok(NativeEndian::read_i64(payload))
+}
+
 pub fn parse_u16_be(payload: &[u8]) -> Result<u16, DecodeError> {
     if payload.len() != size_of::<u16>() {
         return Err(DecodeError::InvalidNumber {
