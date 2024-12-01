@@ -4,6 +4,8 @@ use core::ops::Range;
 
 use anyhow::Context;
 use byteorder::{ByteOrder, NativeEndian};
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
 
 use crate::{
     traits::{Emitable, Parseable},
@@ -178,6 +180,8 @@ impl<'buffer, T: AsRef<[u8]> + AsMut<[u8]> + ?Sized> NlaBuffer<&'buffer mut T> {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+
 pub struct DefaultNla {
     kind: u16,
     value: Vec<u8>,
