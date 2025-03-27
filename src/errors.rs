@@ -3,6 +3,7 @@
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum EncodeError {
     #[error(transparent)]
     Other(#[from] Box<dyn std::error::Error>),
@@ -23,6 +24,7 @@ impl From<String> for EncodeError {
 }
 
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum DecodeError {
     #[error(
         "Invalid MAC address. Expected 6 bytes, received {received} bytes"
