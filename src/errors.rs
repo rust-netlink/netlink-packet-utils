@@ -1,33 +1,24 @@
 // SPDX-License-Identifier: MIT
 
-use anyhow::anyhow;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-#[error("Encode error occurred: {inner}")]
-pub struct EncodeError {
-    inner: anyhow::Error,
+pub enum EncodeError {
+    #[error(transparent)]
+    Other(#[from] Box<dyn std::error::Error>),
 }
 
-impl From<&'static str> for EncodeError {
-    fn from(msg: &'static str) -> Self {
-        EncodeError {
-            inner: anyhow!(msg),
-        }
+impl From<&str> for EncodeError {
+    fn from(msg: &str) -> Self {
+        let error: Box<dyn std::error::Error> = msg.to_string().into();
+        EncodeError::Other(error)
     }
 }
 
 impl From<String> for EncodeError {
     fn from(msg: String) -> Self {
-        EncodeError {
-            inner: anyhow!(msg),
-        }
-    }
-}
-
-impl From<anyhow::Error> for EncodeError {
-    fn from(inner: anyhow::Error) -> EncodeError {
-        EncodeError { inner }
+        let error: Box<dyn std::error::Error> = msg.into();
+        EncodeError::Other(error)
     }
 }
 
