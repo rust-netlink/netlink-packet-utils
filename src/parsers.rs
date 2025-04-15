@@ -88,6 +88,16 @@ pub fn parse_u8(payload: &[u8]) -> Result<u8, DecodeError> {
     Ok(payload[0])
 }
 
+pub fn parse_i8(payload: &[u8]) -> Result<i8, DecodeError> {
+    if payload.len() != 1 {
+        return Err(DecodeError::InvalidNumber {
+            expected: 1,
+            received: payload.len(),
+        });
+    }
+    Ok(payload[0] as i8)
+}
+
 pub fn parse_u32(payload: &[u8]) -> Result<u32, DecodeError> {
     if payload.len() != size_of::<u32>() {
         return Err(DecodeError::InvalidNumber {
