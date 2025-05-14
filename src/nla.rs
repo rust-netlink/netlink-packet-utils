@@ -32,7 +32,7 @@ pub enum NlaError {
     LengthMismatch { buffer_len: usize, nla_len: u16 },
 
     #[error(
-        "NLA has invalid length: {nla_len} (should be at least {} bytes", TYPE.end
+        "NLA has invalid length: {nla_len} (should be at least {} bytes)", TYPE.end
     )]
     InvalidLength { nla_len: u16 },
 }
