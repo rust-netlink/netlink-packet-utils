@@ -94,7 +94,7 @@ impl<T: AsRef<[u8]>> NlaBuffer<T> {
     }
 
     /// Return a reference to the underlying buffer
-    pub fn inner(&mut self) -> &T {
+    pub fn inner(&self) -> &T {
         &self.buffer
     }
 
