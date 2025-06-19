@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-use thiserror::Error;
-
-#[derive(Debug, Error)]
+#[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum EncodeError {
     #[error(transparent)]
@@ -23,7 +21,7 @@ impl From<String> for EncodeError {
     }
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum DecodeError {
     #[error(
@@ -57,6 +55,9 @@ pub enum DecodeError {
     #[error(transparent)]
     Other(#[from] Box<dyn std::error::Error>),
 }
+
+unsafe impl Send for DecodeError {}
+unsafe impl Sync for DecodeError {}
 
 impl From<&str> for DecodeError {
     fn from(msg: &str) -> Self {
